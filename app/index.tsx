@@ -3,9 +3,9 @@ import React from 'react';
 import { Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-const HomePage = ({ navigation }) => {
+const HomePage = () => {
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.leftContainer}>
           <Ionicons name="people-circle-outline" size={100} href={'/'}/>
@@ -13,30 +13,46 @@ const HomePage = ({ navigation }) => {
         </View>
         <Link href={'/login'} style={styles.loginText}>Login</Link>
       </View>
+      <View style={styles.body}>
+      </View>
+      <View style={styles.footer}/>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    height: '100%',
+  },
   header: {
     backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
+    height: '10%',
   },
   leftContainer: {
-    flexDirection: 'row', // Arranges the icon and title side by side
-    alignItems: 'center', // Aligns items vertically within the container
+    flexDirection: 'row',
+    alignItems: 'center', 
   },
   title: {
     fontFamily: 'sans-serif',
     fontSize: 40,
-    marginLeft: 10, // Adds some spacing between the icon and the title
+    marginLeft: 10, 
   },
   loginText: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  body: {
+    height: '75%',
+    backgroundColor: '#cdb7f6'
+  },
+  footer: {
+    backgroundColor: '#49274a',
+    height: '15%',
   },
 });
 
