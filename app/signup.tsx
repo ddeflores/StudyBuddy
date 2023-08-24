@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, Button, Pressable } from 'react-native';
 import React, { useState } from 'react';
-import { Link } from 'expo-router';
+import { Link, Redirect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
 import { SocialIcon } from '@rneui/base';
@@ -10,41 +10,19 @@ import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndP
 const HomePage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmedPass, setConfirmedPass] = useState('');
   const auth = FIREBASE_AUTH;
-
-  const onEmailSignIn = async () => {
-    try {
-      const response = await signInWithEmailAndPassword(auth, email, password);
-      console.log(response);
-    } catch (error: any) {
-      console.log(error);
-      alert('Sign in failed: ' + error.message);
-    }
-  };
 
   const onEmailSignUp = async () => {
     try {
       const response = await createUserWithEmailAndPassword(auth, email, password);
       console.log(response);
+      useRouter().replace('/login');
     } catch (error: any) {
       console.log(error);
       alert('Sign up failed: ' + error.message);
     }
   }
-
-  const onGoogleSignIn = async () => {
-    try {
-      const response = await signInWithPopup(auth, GOOGLE_AUTH);
-      console.log(response);
-      const credential = GoogleAuthProvider.credentialFromResult(response);
-      const token = credential.accessToken;
-      const user = response.user;
-    } catch (error: any) {
-      console.log(error);
-      alert('Sign in failed: ' + error.message);
-
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -57,23 +35,12 @@ const HomePage = () => {
       <View style={styles.body}>
         <View style={styles.loginContainer}>
           <View style={styles.form}>
-            <Text style={{fontSize: 35, fontWeight: 'bold', fontFamily: 'sans-serif'}}>Existing users:</Text>
+            <Text style={{fontSize: 30, fontWeight: 'bold', fontFamily: 'sans-serif', fontStyle: 'italic', paddingBottom: 30}}>Better grades begin now.</Text>
             <TextInput placeholder=" Email" placeholderTextColor="gray" autoCapitalize='none' style={styles.input} onChangeText={newEmail => setEmail(newEmail)} defaultValue={email}/>
             <TextInput secureTextEntry={true} placeholder=" Password" placeholderTextColor="gray" autoCapitalize='none' style={styles.input} onChangeText={newPassword => setPassword(newPassword)} defaultValue={password}/>
-            <Button onPress={onEmailSignIn} title='Sign in' color='#49274a'></Button>
-            <View style={{display: 'flex', flexDirection: 'row'}}>
-              <Text>
-                Don't have an account?
-              </Text>
-              <Link href={'/signup'} style={{paddingLeft: 5, fontWeight: 'bold'}}>Sign up</Link>
-            </View>
-            <Text style={{paddingBottom: 5}}>or</Text>
-            <View style={{display: 'flex', flexDirection: 'row', backgroundColor: '#ff5349', alignItems: 'center', borderRadius: 12, borderWidth: 3, borderColor: '#49274a'}}>
-              <SocialIcon type='google' style={{borderWidth: 1, borderColor: '#49274a'}}></SocialIcon>
-              <Pressable onPress={onGoogleSignIn}>
-                <Text style={{fontSize: 18, fontWeight: 'bold', color: 'white', paddingRight: 10}}>Sign in with Google</Text>
-              </Pressable>
-            </View>
+            <TextInput secureTextEntry={true} placeholder=" Confirm Password" placeholderTextColor="gray" autoCapitalize='none' style={styles.input} onChangeText={newPassword => setConfirmedPass(newPassword)} defaultValue={confirmedPass}/>
+            {password !== confirmedPass && <Text style={{color: 'red'}}>Passwords do not match!</Text>}
+            <Button onPress={onEmailSignUp} title='Sign up' color='#49274a'></Button>
           </View>
         </View>
       </View>
