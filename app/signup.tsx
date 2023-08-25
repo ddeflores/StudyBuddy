@@ -3,11 +3,10 @@ import React, { useState } from 'react';
 import { Link, Redirect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
-import { SocialIcon } from '@rneui/base';
 import { FIREBASE_AUTH, GOOGLE_AUTH } from '../firebaseConfig';
 import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
-const HomePage = () => {
+const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmedPass, setConfirmedPass] = useState('');
@@ -15,9 +14,14 @@ const HomePage = () => {
 
   const onEmailSignUp = async () => {
     try {
-      const response = await createUserWithEmailAndPassword(auth, email, password);
-      console.log(response);
-      useRouter().replace('/login');
+      if (password === confirmedPass) {
+        const response = await createUserWithEmailAndPassword(auth, email, password);
+        console.log(response);
+        useRouter().replace('/login');
+      }
+      else {
+        alert('Passwords must match!');
+      }
     } catch (error: any) {
       console.log(error);
       alert('Sign up failed: ' + error.message);
@@ -26,16 +30,14 @@ const HomePage = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.leftContainer}>
-          <Ionicons name="people-circle-outline" size={100} href={'/'}/>
-          <Link style={styles.title} href={'/'}>StudyBuddy</Link>
-        </View>
+      <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+        <Ionicons name="people-circle-outline" size={100} href={'/'}/>
+        <Link style={{fontSize: 30, fontWeight: '700', textDecorationLine: 'underline'}} href={'/'}>StudyBuddy</Link>
       </View>
       <View style={styles.body}>
         <View style={styles.loginContainer}>
           <View style={styles.form}>
-            <Text style={{fontSize: 30, fontWeight: 'bold', fontFamily: 'sans-serif', fontStyle: 'italic', paddingBottom: 30}}>Better grades begin now.</Text>
+            <Text style={{fontSize: 20, fontWeight: 'bold', fontStyle: 'italic', paddingBottom: 30}}>Better grades begin now.</Text>
             <TextInput placeholder=" Email" placeholderTextColor="gray" autoCapitalize='none' style={styles.input} onChangeText={newEmail => setEmail(newEmail)} defaultValue={email}/>
             <TextInput secureTextEntry={true} placeholder=" Password" placeholderTextColor="gray" autoCapitalize='none' style={styles.input} onChangeText={newPassword => setPassword(newPassword)} defaultValue={password}/>
             <TextInput secureTextEntry={true} placeholder=" Confirm Password" placeholderTextColor="gray" autoCapitalize='none' style={styles.input} onChangeText={newPassword => setConfirmedPass(newPassword)} defaultValue={confirmedPass}/>
@@ -44,23 +46,17 @@ const HomePage = () => {
           </View>
         </View>
       </View>
-      <View style={styles.footer}/>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
     height: '100%',
-  },
-  header: {
-    backgroundColor: 'white',
-    flexDirection: 'row',
+    display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    height: '10%',
+    justifyContent: 'center',
   },
   leftContainer: {
     flexDirection: 'row', 
@@ -80,13 +76,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  footer: {
-    backgroundColor: '#49274a',
-    height: '15%',
-  },
   loginContainer: {
     height: '80%',
-    width: '50%',
+    padding: 20,
     borderStyle: 'solid',
     borderWidth: 8,
     borderColor: '#49274a',
@@ -109,4 +101,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomePage;
+export default SignUpPage;
