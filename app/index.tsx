@@ -6,7 +6,7 @@ import { SocialIcon } from '@rneui/base';
 import { FIREBASE_AUTH, GOOGLE_AUTH } from '../firebaseConfig';
 import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
-const HomePage = () => {
+const index = () => {
   const auth = FIREBASE_AUTH;
   const onGoogleSignIn = async () => {
     try {
@@ -15,10 +15,14 @@ const HomePage = () => {
       const credential = GoogleAuthProvider.credentialFromResult(response);
       const token = credential.accessToken;
       const user = response.user;
+      FIREBASE_AUTH.onAuthStateChanged(function(user) {
+        if (user) {
+          useRouter().replace('/userIndex');
+        }
+      });
     } catch (error: any) {
       console.log(error);
       alert('Sign in failed: ' + error.message);
-
     }
   };
 
@@ -26,19 +30,18 @@ const HomePage = () => {
     <View style={styles.container}>
       <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
         <Ionicons name="people-circle-outline" size={100} href={'/'}/>
-        <Link style={{fontSize: 30, fontWeight: '700', textDecorationLine: 'underline'}} href={'/'}>StudyBuddy</Link>
+        <Link style={{fontSize: 30, fontWeight: '700'}} href={'/'}>StudyBuddy</Link>
       </View>
       <TouchableOpacity style={styles.buttons} onPress={() => useRouter().push('/login')}>
-        <Text style={{fontSize: 20, fontWeight: '500'}}>Login</Text>
+        <Text style={{fontSize: 20, fontWeight: '500', color: 'white'}}>Login</Text>
       </TouchableOpacity>
         <TouchableOpacity style={styles.buttons} onPress={() => useRouter().push('/signup')}>
-          <Text style={{fontSize: 20, fontWeight: '500'}}>Sign up</Text>
+          <Text style={{fontSize: 20, fontWeight: '500', color: 'white'}}>Sign up</Text>
         </TouchableOpacity>
-        <Text style={{fontWeight: 'bold'}}>or</Text>
-        <View style={{display: 'flex', flexDirection: 'row', backgroundColor: '#ff5349', alignItems: 'center', borderRadius: 12, borderWidth: 3, borderColor: '#49274a'}}>
-              <SocialIcon type='google' style={{borderWidth: 1, borderColor: '#49274a'}}></SocialIcon>
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>or</Text>
+        <View style={styles.buttons}>
               <TouchableOpacity onPress={onGoogleSignIn}>
-                <Text style={{fontSize: 18, fontWeight: 'bold', color: 'white', paddingRight: 10}}>Sign in with Google</Text>
+                <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white', paddingRight: 10}}>Sign in with Google (Web only)</Text>
               </TouchableOpacity>
             </View>
     </View>
@@ -56,12 +59,11 @@ const styles = StyleSheet.create({
   buttons: {
     marginTop: 10,
     marginBottom: 5,
-    backgroundColor: '#ff5349',
+    backgroundColor: 'black',
     padding: 15,
     borderRadius: 12,
     borderWidth: 3,
-    borderColor: '#49274a',
   }
 });
 
-export default HomePage;
+export default index;

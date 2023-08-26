@@ -18,6 +18,13 @@ const SignUpPage = () => {
         const response = await createUserWithEmailAndPassword(auth, email, password);
         console.log(response);
         useRouter().replace('/login');
+        try {
+          const response = await signInWithEmailAndPassword(auth, email, password);
+          console.log(response);
+        } catch (error: any) {
+          console.log(error);
+          alert('Sign in failed: ' + error.message);
+        }
       }
       else {
         alert('Passwords must match!');
@@ -26,23 +33,28 @@ const SignUpPage = () => {
       console.log(error);
       alert('Sign up failed: ' + error.message);
     }
+    FIREBASE_AUTH.onAuthStateChanged(function(user) {
+      if (user) {
+        useRouter().replace('/userIndex');
+      }
+    });
   }
 
   return (
     <View style={styles.container}>
       <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
         <Ionicons name="people-circle-outline" size={100} href={'/'}/>
-        <Link style={{fontSize: 30, fontWeight: '700', textDecorationLine: 'underline'}} href={'/'}>StudyBuddy</Link>
+        <Link style={{fontSize: 30, fontWeight: '700'}} href={'/'}>StudyBuddy</Link>
       </View>
       <View style={styles.body}>
         <View style={styles.loginContainer}>
           <View style={styles.form}>
-            <Text style={{fontSize: 20, fontWeight: 'bold', fontStyle: 'italic', paddingBottom: 30}}>Better grades begin now.</Text>
+            <Text style={{fontSize: 20, fontWeight: 'bold', fontStyle: 'italic', paddingBottom: 30}}>Welcome to the team.</Text>
             <TextInput placeholder=" Email" placeholderTextColor="gray" autoCapitalize='none' style={styles.input} onChangeText={newEmail => setEmail(newEmail)} defaultValue={email}/>
             <TextInput secureTextEntry={true} placeholder=" Password" placeholderTextColor="gray" autoCapitalize='none' style={styles.input} onChangeText={newPassword => setPassword(newPassword)} defaultValue={password}/>
             <TextInput secureTextEntry={true} placeholder=" Confirm Password" placeholderTextColor="gray" autoCapitalize='none' style={styles.input} onChangeText={newPassword => setConfirmedPass(newPassword)} defaultValue={confirmedPass}/>
             {password !== confirmedPass && <Text style={{color: 'red'}}>Passwords do not match!</Text>}
-            <Button onPress={onEmailSignUp} title='Sign up' color='#49274a'></Button>
+            <Button onPress={onEmailSignUp} title='Sign up' color='black'></Button>
           </View>
         </View>
       </View>
@@ -81,10 +93,10 @@ const styles = StyleSheet.create({
     padding: 20,
     borderStyle: 'solid',
     borderWidth: 8,
-    borderColor: '#49274a',
+    borderColor: 'black',
     borderRadius: 16,
     justifyContent: 'center',
-    backgroundColor: '#ffefff',
+    backgroundColor: 'white',
   },
   form: {
     display: 'flex',

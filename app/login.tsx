@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet, TouchableOpacity, Button, Pressable } from 'react-native';
 import React, { useState } from 'react';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
-import { FIREBASE_AUTH, GOOGLE_AUTH } from '../firebaseConfig';
-import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { FIREBASE_APP, FIREBASE_AUTH, GOOGLE_AUTH } from '../firebaseConfig';
+import { GoogleAuthProvider, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -19,20 +19,25 @@ const LoginPage = () => {
       console.log(error);
       alert('Sign in failed: ' + error.message);
     }
+    FIREBASE_AUTH.onAuthStateChanged(function(user) {
+      if (user) {
+        useRouter().replace('/userIndex');
+      }
+    });
   };
 
   return (
     <View style={styles.container}>
       <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
         <Ionicons name="people-circle-outline" size={100} href={'/'}/>
-        <Link style={{fontSize: 30, fontWeight: '700', textDecorationLine: 'underline'}} href={'/'}>StudyBuddy</Link>
+        <Link style={{fontSize: 30, fontWeight: '700'}} href={'/'}>StudyBuddy</Link>
       </View>
       <View style={styles.body}>
         <View style={styles.loginContainer}>
         <Text style={{fontSize: 20, fontWeight: 'bold', fontStyle: 'italic', paddingBottom: 30}}>Existing users:</Text>
             <TextInput placeholder=" Email" placeholderTextColor="gray" autoCapitalize='none' style={styles.input} onChangeText={newEmail => setEmail(newEmail)} defaultValue={email}/>
             <TextInput secureTextEntry={true} placeholder=" Password" placeholderTextColor="gray" autoCapitalize='none' style={styles.input} onChangeText={newPassword => setPassword(newPassword)} defaultValue={password}/>
-            <Button onPress={onEmailSignIn} title='Sign in' color='#49274a'></Button>
+            <Button onPress={onEmailSignIn} title='Sign in' color='black'></Button>
             <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
               <Text>
                 Don't have an account?
@@ -63,10 +68,10 @@ const styles = StyleSheet.create({
     padding: 20,
     borderStyle: 'solid',
     borderWidth: 8,
-    borderColor: '#49274a',
+    borderColor: 'black',
     borderRadius: 16,
     justifyContent: 'center',
-    backgroundColor: '#ffefff',
+    backgroundColor: 'white',
     alignItems: 'center'
   },
   input: {
