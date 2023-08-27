@@ -13,7 +13,8 @@ const firebaseConfig = {
   storageBucket: "studybuddy-a980f.appspot.com",
   messagingSenderId: "107501556428",
   appId: "1:107501556428:web:ba055d65f79d717032e869",
-  measurementId: "G-XE98Y5BKDL"
+  measurementId: "G-XE98Y5BKDL",
+  databaseURL: "https://studybuddy-a980f-default-rtdb.firebaseio.com"
 };
 
 // Initialize Firebase

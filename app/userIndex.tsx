@@ -1,9 +1,11 @@
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, Text } from 'react-native'
 import React from 'react'
 import Body from '../components/Body';
 import NavBar from '../components/NavBar';
+import { FIREBASE_AUTH, FIREBASE_DB } from '../firebaseConfig';
 
 const userIndex = () => {
+
     return (
         <View style={styles.container}>
             <NavBar></NavBar>

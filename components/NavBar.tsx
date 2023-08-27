@@ -1,10 +1,30 @@
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import { FIREBASE_AUTH } from '../firebaseConfig'
 import Icon from 'react-native-vector-icons/Ionicons';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { useRouter } from 'expo-router';
 
 function NavBar(): JSX.Element {
     const [visible, setVisible] = useState(false);
+    
+    FIREBASE_AUTH.onAuthStateChanged(function(user) {
+        if (!user) {
+          useRouter().replace('/');
+        }
+      });
+
+    const onSignOut = async () => {
+        signOut(FIREBASE_AUTH);
+    }
+
+    const uploadPDF = async () => {
+
+    }
+
+    const makeNewNote = async () => {
+
+    }
 
     return (
         <View style={styles.container}>
@@ -22,18 +42,18 @@ function NavBar(): JSX.Element {
                 <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Your Dashboard</Text>
                 {visible &&
                 <View>
-                    <TouchableOpacity style={styles.dropdownItem}>
-                        <Text style={{fontSize: 18, fontWeight: '500'}}>My Files</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.dropdownItem}>
+                    <Pressable style={styles.dropdownItem} onPress={uploadPDF}>
                         <Text style={{fontSize: 18, fontWeight: '500'}}>Upload</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.dropdownItem}>
-                        <Text style={{fontSize: 18, fontWeight: '500'}}>Share</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.dropdownItem}>
+                    </Pressable>
+                    <Pressable style={styles.dropdownItem} onPress={makeNewNote}>
+                        <Text style={{fontSize: 18, fontWeight: '500'}}>New Note</Text>
+                    </Pressable>
+                    <Pressable style={styles.dropdownItem} onPress={() => {useRouter().replace('/friendsList')}}>
                         <Text style={{fontSize: 18, fontWeight: '500'}}>Friends</Text>
-                    </TouchableOpacity>
+                    </Pressable>
+                    <Pressable style={styles.dropdownItem} onPress={onSignOut}>
+                        <Text style={{fontSize: 18, fontWeight: '500'}}>Logout</Text>
+                    </Pressable>
                 </View>
                 }
                 </View>
@@ -44,7 +64,6 @@ function NavBar(): JSX.Element {
 const styles = StyleSheet.create({
     container: {
         paddingTop: '1%',
-        height: '100%',
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -67,7 +86,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
     },
     dropdownItem: {
-        paddingTop: 10,
+        paddingTop: 15,
     }
 })
 export default NavBar

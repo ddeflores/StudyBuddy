@@ -2,24 +2,26 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { SocialIcon } from '@rneui/base';
 import { FIREBASE_AUTH, GOOGLE_AUTH } from '../firebaseConfig';
-import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, inMemoryPersistence, setPersistence, signInWithPopup } from 'firebase/auth';
 
 const index = () => {
   const auth = FIREBASE_AUTH;
+
+  FIREBASE_AUTH.onAuthStateChanged(function(user) {
+    if (user) {
+      useRouter().replace('/userIndex');
+    }
+  });
+  
   const onGoogleSignIn = async () => {
+    setPersistence(auth, inMemoryPersistence)
     try {
       const response = await signInWithPopup(auth, GOOGLE_AUTH);
       console.log(response);
       const credential = GoogleAuthProvider.credentialFromResult(response);
       const token = credential.accessToken;
       const user = response.user;
-      FIREBASE_AUTH.onAuthStateChanged(function(user) {
-        if (user) {
-          useRouter().replace('/userIndex');
-        }
-      });
     } catch (error: any) {
       console.log(error);
       alert('Sign in failed: ' + error.message);
