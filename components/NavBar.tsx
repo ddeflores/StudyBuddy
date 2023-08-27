@@ -4,45 +4,63 @@ import { FIREBASE_AUTH } from '../firebaseConfig'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useRouter } from 'expo-router';
+import * as DocumentPicker from 'expo-document-picker';
+import { Ionicons } from '@expo/vector-icons';
 
 function NavBar(): JSX.Element {
     const [visible, setVisible] = useState(false);
-    
+    const [singleFile, setSingleFile] = useState<DocumentPicker.DocumentPickerResult>(null);
+
+    const selectFile = async () => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+              copyToCacheDirectory: true,
+              type: '*/*',
+            });
+            console.log('res : ' + JSON.stringify(result));
+            setSingleFile(result);
+        } catch (error) {
+          setSingleFile(null);
+          console.warn(error);
+          return false;
+        }
+        setVisible(!visible);
+    }
+
+    const uploadToDB = async () => {
+
+    }
+
     FIREBASE_AUTH.onAuthStateChanged(function(user) {
         if (!user) {
           useRouter().replace('/');
         }
       });
-
+      
     const onSignOut = async () => {
         signOut(FIREBASE_AUTH);
     }
 
-    const uploadPDF = async () => {
-
-    }
-
     const makeNewNote = async () => {
-
+        setVisible(!visible);
     }
 
     return (
         <View style={styles.container}>
             <View style={styles.navBar}>
-                <TouchableOpacity>
-                    <Icon name="home" size={40}/>
-                </TouchableOpacity>
+            <Ionicons name="people-circle-outline" size={40}/>
                 <Text style={{fontSize: 20, fontWeight: 'bold'}}>Your Dashboard</Text>
                 <TouchableOpacity onPress={() => setVisible(!visible)}>
                     <Icon name="menu-outline" size={40}/>
                 </TouchableOpacity>
             </View>
+            {singleFile ? singleFile.assets[0].name : ''}
             <View style={styles.dropdown}>
                 <Icon name="home" color='white' size={40}/>
                 <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Your Dashboard</Text>
                 {visible &&
                 <View>
-                    <Pressable style={styles.dropdownItem} onPress={uploadPDF}>
+                    <Pressable style={styles.dropdownItem} onPress={selectFile}>
                         <Text style={{fontSize: 18, fontWeight: '500'}}>Upload</Text>
                     </Pressable>
                     <Pressable style={styles.dropdownItem} onPress={makeNewNote}>
@@ -56,7 +74,7 @@ function NavBar(): JSX.Element {
                     </Pressable>
                 </View>
                 }
-                </View>
+            </View>
         </View>
     )
 }
