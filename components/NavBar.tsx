@@ -8,6 +8,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
 
 function NavBar(): JSX.Element {
+    const [confirmVisible, setConfirmVisible] = useState(false);
     const [visible, setVisible] = useState(false);
     const [singleFile, setSingleFile] = useState<DocumentPicker.DocumentPickerResult>(null);
 
@@ -69,9 +70,22 @@ function NavBar(): JSX.Element {
                     <Pressable style={styles.dropdownItem} onPress={() => {useRouter().replace('/friendsList')}}>
                         <Text style={{fontSize: 18, fontWeight: '500'}}>Friends</Text>
                     </Pressable>
-                    <Pressable style={styles.dropdownItem} onPress={onSignOut}>
+                    <Pressable style={styles.dropdownItem} onPress={() => setConfirmVisible(true)}>
                         <Text style={{fontSize: 18, fontWeight: '500'}}>Logout</Text>
                     </Pressable>
+                    {confirmVisible &&
+                    <View style={{borderWidth: 2, borderRadius: 12, borderColor: 'black', padding: 3}}>
+                        <Text>Confirm log out?</Text>
+                        <View style={{display: 'flex', flexDirection: 'row'}}>
+                            <Pressable onPress={onSignOut}>
+                                <Text style={{fontWeight: 'bold'}}>Yes</Text>
+                            </Pressable>
+                            <Pressable onPress={() => setConfirmVisible(false)} style={{paddingLeft: 40}}>
+                                <Text style={{fontWeight: 'bold'}}>Cancel</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                    }
                 </View>
                 }
             </View>
