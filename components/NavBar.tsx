@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Pressable } from 'react-native'
 import React, { useState } from 'react'
-import { FIREBASE_AUTH } from '../firebaseConfig'
+import { FIREBASE_AUTH, FIREBASE_DB } from '../firebaseConfig'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useRouter } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
+import { ref, update } from "firebase/database";
 
 function NavBar(): JSX.Element {
     const [confirmVisible, setConfirmVisible] = useState(false);
@@ -28,9 +29,16 @@ function NavBar(): JSX.Element {
         setVisible(!visible);
     }
 
-    const uploadToDB = async () => {
-
-    }
+    function uploadToDB(userId: string, name: string, email: string, fileURL: string) {
+        update(ref(FIREBASE_DB, 'users/' + userId), {
+          username: name,
+          email: email,
+          newFile : fileURL
+        }).catch((error) => {
+            alert(error);
+        })
+        setSingleFile(null);
+      }
 
     FIREBASE_AUTH.onAuthStateChanged(function(user) {
         if (!user) {
@@ -55,7 +63,19 @@ function NavBar(): JSX.Element {
                     <Icon name="menu-outline" size={40}/>
                 </TouchableOpacity>
             </View>
-            {singleFile ? singleFile.assets[0].name : ''}
+            {singleFile && 
+            <View style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end'}}>
+                <Text style={{display: 'flex', justifyContent: 'center', color: 'blue', fontSize: 15}}>{singleFile.assets[0].name + ': '}</Text>
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                    <Pressable onPress={() => uploadToDB(FIREBASE_AUTH.currentUser.uid, FIREBASE_AUTH.currentUser.displayName, FIREBASE_AUTH.currentUser.email, singleFile.assets[0].uri)}>
+                        <Text style={{fontWeight: 'bold', paddingRight: 10}}>Confirm upload</Text>
+                    </Pressable>
+                    <Text>or</Text>
+                    <Pressable style={{paddingLeft: 10}} onPress={() => setSingleFile(null)}>
+                        <Text style={{fontWeight: 'bold'}}>Cancel</Text>
+                    </Pressable>
+                </View>
+            </View>}
             <View style={styles.dropdown}>
                 <Icon name="home" color='white' size={40}/>
                 <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Your Dashboard</Text>
