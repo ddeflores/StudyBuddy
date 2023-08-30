@@ -118,13 +118,6 @@ const userIndex = () => {
                         <Icon name="menu-outline" size={40}/>
                     </TouchableOpacity>
                 </View>
-                {singleFile && 
-                <View style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end', marginTop: '10%'}}>
-                    <Text style={{display: 'flex', justifyContent: 'center', color: 'blue', fontSize: 15}}>{singleFile.assets[0].name + ': '}</Text>
-                    <Pressable onPress={() => uploadToDB(FIREBASE_AUTH.currentUser.uid, FIREBASE_AUTH.currentUser.displayName, FIREBASE_AUTH.currentUser.email, singleFile.assets[0].uri, singleFile.assets[0].name)}>
-                        <Text style={{fontWeight: 'bold', paddingRight: 10}}>Confirm upload</Text>
-                    </Pressable>
-                </View>}
                 <View style={styles.dropdown}>
                     <Icon name="home" color='white' size={40}/>
                     <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Your Dashboard</Text>
@@ -159,6 +152,14 @@ const userIndex = () => {
                     }
                 </View>
             </View>
+            {singleFile && 
+                <View style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end', marginTop: '10%'}}>
+                    <Text style={{display: 'flex', justifyContent: 'center', color: 'blue', fontSize: 15}}>{singleFile.assets[0].name + ': '}</Text>
+                    <Pressable onPress={() => uploadToDB(FIREBASE_AUTH.currentUser.uid, FIREBASE_AUTH.currentUser.displayName, FIREBASE_AUTH.currentUser.email, singleFile.assets[0].uri, singleFile.assets[0].name)}>
+                        <Text style={{fontWeight: 'bold', paddingRight: 10}}>Confirm upload</Text>
+                    </Pressable>
+                </View>
+            }
             <View style={styles.body}>
                 <View>
                     <Text style={{fontSize: 20, color: 'black', fontWeight: 'bold'}}>Your Files:</Text>
