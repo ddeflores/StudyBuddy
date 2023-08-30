@@ -1,18 +1,25 @@
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FIREBASE_AUTH, FIREBASE_DB } from '../firebaseConfig'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useRouter } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
-import { ref, update } from "firebase/database";
+import { onValue, push, ref, update } from "firebase/database";
 
 function NavBar(): JSX.Element {
     const [confirmVisible, setConfirmVisible] = useState(false);
     const [visible, setVisible] = useState(false);
     const [singleFile, setSingleFile] = useState<DocumentPicker.DocumentPickerResult>(null);
+    const [keys, setKeys] = useState([]);
+    const [filenames, setFilenames] = useState<string[]>([]);
 
+    function updateFiles(newFile: string) {
+        const newFilenames = [...filenames, newFile];
+        setFilenames(newFilenames);
+    }
+    
     const selectFile = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
@@ -29,16 +36,30 @@ function NavBar(): JSX.Element {
         setVisible(!visible);
     }
 
-    function uploadToDB(userId: string, name: string, email: string, fileURL: string) {
-        update(ref(FIREBASE_DB, 'users/' + userId), {
-          username: name,
-          email: email,
-          newFile : fileURL
+    function addKey(newKey: string) {
+        const newKeys = [...keys, newKey];
+        setKeys(newKeys);
+    }
+
+    function uploadToDB(userId: string, name: string, email: string, fileURL: string, fileName: string) {
+        const newRef = push(ref(FIREBASE_DB, 'users/' + userId + '/files'))
+        update(newRef, {
+          filename : fileName,
+          filepath: fileURL
         }).catch((error) => {
             alert(error);
         })
         setSingleFile(null);
-      }
+        addKey(newRef.key);
+    }
+
+    useEffect(() => {
+        const starCountRef = ref(FIREBASE_DB, 'users/' + FIREBASE_AUTH.currentUser.uid + '/files/' + keys[keys.length - 1]);
+        onValue(starCountRef, (snapshot) => {
+          const data = snapshot.val();
+          updateFiles(data);
+        });
+    }, []);
 
     FIREBASE_AUTH.onAuthStateChanged(function(user) {
         if (!user) {
@@ -55,7 +76,7 @@ function NavBar(): JSX.Element {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={styles.navContainer}>
             <View style={styles.navBar}>
             <Ionicons name="people-circle-outline" size={40}/>
                 <Text style={{fontSize: 20, fontWeight: 'bold'}}>Your Dashboard</Text>
@@ -64,17 +85,11 @@ function NavBar(): JSX.Element {
                 </TouchableOpacity>
             </View>
             {singleFile && 
-            <View style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end'}}>
+            <View style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end', marginTop: 50}}>
                 <Text style={{display: 'flex', justifyContent: 'center', color: 'blue', fontSize: 15}}>{singleFile.assets[0].name + ': '}</Text>
-                <View style={{display: 'flex', flexDirection: 'row'}}>
-                    <Pressable onPress={() => uploadToDB(FIREBASE_AUTH.currentUser.uid, FIREBASE_AUTH.currentUser.displayName, FIREBASE_AUTH.currentUser.email, singleFile.assets[0].uri)}>
-                        <Text style={{fontWeight: 'bold', paddingRight: 10}}>Confirm upload</Text>
-                    </Pressable>
-                    <Text>or</Text>
-                    <Pressable style={{paddingLeft: 10}} onPress={() => setSingleFile(null)}>
-                        <Text style={{fontWeight: 'bold'}}>Cancel</Text>
-                    </Pressable>
-                </View>
+                <Pressable onPress={() => uploadToDB(FIREBASE_AUTH.currentUser.uid, FIREBASE_AUTH.currentUser.displayName, FIREBASE_AUTH.currentUser.email, singleFile.assets[0].uri, singleFile.assets[0].name)}>
+                    <Text style={{fontWeight: 'bold', paddingRight: 10}}>Confirm upload</Text>
+                </Pressable>
             </View>}
             <View style={styles.dropdown}>
                 <Icon name="home" color='white' size={40}/>
@@ -114,7 +129,7 @@ function NavBar(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
-    container: {
+    navContainer: {
         paddingTop: '1%',
         width: '100%',
         display: 'flex',

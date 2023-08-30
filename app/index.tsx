@@ -3,7 +3,7 @@ import React from 'react';
 import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { FIREBASE_AUTH, GOOGLE_AUTH } from '../firebaseConfig';
-import { GoogleAuthProvider, inMemoryPersistence, setPersistence, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, browserLocalPersistence, inMemoryPersistence, setPersistence, signInWithPopup } from 'firebase/auth';
 
 const index = () => {
   const auth = FIREBASE_AUTH;
@@ -15,7 +15,7 @@ const index = () => {
   });
   
   const onGoogleSignIn = async () => {
-    setPersistence(auth, inMemoryPersistence)
+    setPersistence(auth, browserLocalPersistence)
     try {
       const response = await signInWithPopup(auth, GOOGLE_AUTH);
       console.log(response);

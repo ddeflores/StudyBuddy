@@ -4,7 +4,7 @@ import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
 import { FIREBASE_APP, FIREBASE_AUTH } from '../firebaseConfig';
-import { inMemoryPersistence, onAuthStateChanged, setPersistence, signInWithEmailAndPassword } from 'firebase/auth';
+import { browserLocalPersistence, inMemoryPersistence, onAuthStateChanged, setPersistence, signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -18,7 +18,7 @@ const LoginPage = () => {
   });
 
   const onEmailSignIn = async () => {
-    setPersistence(auth, inMemoryPersistence)
+    setPersistence(auth, browserLocalPersistence)
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);

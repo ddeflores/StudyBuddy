@@ -4,7 +4,7 @@ import { Link, Redirect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
 import { FIREBASE_AUTH, GOOGLE_AUTH } from '../firebaseConfig';
-import { GoogleAuthProvider, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+import { GoogleAuthProvider, browserLocalPersistence, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
@@ -19,7 +19,7 @@ const SignUpPage = () => {
   });
 
   const onEmailSignUp = async () => {
-    setPersistence(auth, inMemoryPersistence)
+    setPersistence(auth, browserLocalPersistence)
     try {
       if (password === confirmedPass) {
         const response = await createUserWithEmailAndPassword(auth, email, password);

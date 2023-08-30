@@ -1,12 +1,13 @@
 import { View, Text, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as DocumentPicker from 'expo-document-picker';
+import { getDatabase, onValue, ref, set } from 'firebase/database';
+import { FIREBASE_AUTH, FIREBASE_DB } from '../firebaseConfig';
 
-function Body(userFiles: any): JSX.Element {
-  const [files, setFiles] = useState<DocumentPicker.DocumentPickerResult>(userFiles);
-  
+function Body(): JSX.Element {
+
   return (
-    <View style={styles.container}>
+    <View style={styles.body}>
       <View>
         <Text style={{fontSize: 20, color: 'black', fontWeight: 'bold'}}>Your Files:</Text>
         <Text>Don't have any files? Make or upload one by tapping the top right corner!</Text>
@@ -16,7 +17,7 @@ function Body(userFiles: any): JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  body: {
     paddingTop: '1%',
     paddingLeft: '10%',
     width: '80%',
