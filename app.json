@@ -14,6 +14,17 @@
       ]
     ],
     "name": "study-buddy",
-    "slug": "study-buddy"
+    "slug": "study-buddy",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "75db6679-7348-483c-9866-fb512cfcda19"
+      }
+    },
+    "android": {
+      "package": "com.ddeflores.studybuddy"
+    }
   }
 }

@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native';
+import React, { useEffect } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { FIREBASE_AUTH, GOOGLE_AUTH } from '../firebaseConfig';
@@ -8,11 +8,13 @@ import { GoogleAuthProvider, browserLocalPersistence, inMemoryPersistence, setPe
 const index = () => {
   const auth = FIREBASE_AUTH;
 
-  FIREBASE_AUTH.onAuthStateChanged(function(user) {
-    if (user) {
-      useRouter().replace('/userIndex');
-    }
-  });
+  useEffect(() => {
+    FIREBASE_AUTH.onAuthStateChanged(function(user) {
+      if (user) {
+        useRouter().replace('/userIndex');
+      }
+    });
+  }, []);
   
   const onGoogleSignIn = async () => {
     setPersistence(auth, browserLocalPersistence)

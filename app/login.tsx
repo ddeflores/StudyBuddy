@@ -1,21 +1,23 @@
 import { View, Text, StyleSheet, Button, Pressable } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
 import { FIREBASE_APP, FIREBASE_AUTH } from '../firebaseConfig';
-import { browserLocalPersistence, inMemoryPersistence, onAuthStateChanged, setPersistence, signInWithEmailAndPassword } from 'firebase/auth';
+import { browserLocalPersistence, onAuthStateChanged, setPersistence, signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const auth = FIREBASE_AUTH;
   
-  FIREBASE_AUTH.onAuthStateChanged(function(user) {
-    if (user) {
-      useRouter().replace('/userIndex');
-    }
-  });
+  useEffect(() => {
+    FIREBASE_AUTH.onAuthStateChanged(function(user) {
+      if (user) {
+        useRouter().replace('/userIndex');
+      }
+    });
+  }, []);
 
   const onEmailSignIn = async () => {
     setPersistence(auth, browserLocalPersistence)
