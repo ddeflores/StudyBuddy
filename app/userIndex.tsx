@@ -50,20 +50,25 @@ const userIndex = () => {
 
     // Upload the selected file to the database
     function uploadToDB(userId: string, fileURL: string, fileName: string) {
-        const newRef = push(ref(FIREBASE_DB, 'users/' + userId + '/files'))
-        update(newRef, {
-          filename : fileName,
-          filepath: fileURL
-        }).catch((error) => {
-            alert(error);
-        })
-        setSingleFile(null);
+        if (!filenames.includes(fileName)) {
+            const newRef = push(ref(FIREBASE_DB, 'users/' + userId + '/files'))
+            update(newRef, {
+            filename : fileName,
+            filepath: fileURL
+            }).catch((error) => {
+                alert(error);
+            })
+            setSingleFile(null);
+        }
+        else {
+            alert('A file with this name already exists!');
+        }
     }
 
     function uploadNoteToDB(userId: string, name: string, email: string, fileName: string) {
     }
 
-    function deleteFromDB(fileURL: string) {
+    function deleteFromDB(fileURL: string, fileName: string) {
         const newRef = ref(FIREBASE_DB, 'users/' + FIREBASE_AUTH.currentUser.uid + '/files/' + fileURL);
         console.log(newRef.toString());
         remove(newRef).catch((error) => {
@@ -72,6 +77,8 @@ const userIndex = () => {
         setEditMode(!editMode);
         const newKeys = keys.filter((key: string) => key != fileURL);
         setKeys(newKeys);
+        const newFilenames = filenames.filter((filename: string) => filename != fileName);
+        setFilenames(newFilenames);
     }
 
     // Update the list of keys to access files in db
@@ -215,7 +222,7 @@ const userIndex = () => {
                                         <Text style={{fontSize: 18}}>{item}</Text>
                                     </Pressable>
                                     {editMode &&
-                                    <Pressable style={styles.buttons} onPress={() => deleteFromDB(keys[index])}>
+                                    <Pressable style={styles.buttons} onPress={() => deleteFromDB(keys[index], item)}>
                                         <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>Delete</Text>
                                     </Pressable>
                                     }
