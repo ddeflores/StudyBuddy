@@ -1,7 +1,7 @@
 import { View, StyleSheet, Text, Pressable, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { FIREBASE_AUTH, FIREBASE_DB } from '../firebaseConfig';
-import { child, get, onValue, push, ref, update } from 'firebase/database';
+import { child, get, onValue, push, ref, remove, update } from 'firebase/database';
 import { useRouter } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import * as DocumentPicker from 'expo-document-picker';
@@ -15,6 +15,7 @@ import { base64Decode, base64Encode } from '@firebase/util';
 
 const userIndex = () => {
     // States
+    const [editMode, setEditMode] = useState(false);
     const [noteVisible, setNoteVisible] = useState(false);
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
@@ -48,7 +49,7 @@ const userIndex = () => {
     }
 
     // Upload the selected file to the database
-    function uploadToDB(userId: string, name: string, email: string, fileURL: string, fileName: string) {
+    function uploadToDB(userId: string, fileURL: string, fileName: string) {
         const newRef = push(ref(FIREBASE_DB, 'users/' + userId + '/files'))
         update(newRef, {
           filename : fileName,
@@ -60,6 +61,17 @@ const userIndex = () => {
     }
 
     function uploadNoteToDB(userId: string, name: string, email: string, fileName: string) {
+    }
+
+    function deleteFromDB(fileURL: string) {
+        const newRef = ref(FIREBASE_DB, 'users/' + FIREBASE_AUTH.currentUser.uid + '/files/' + fileURL);
+        console.log(newRef.toString());
+        remove(newRef).catch((error) => {
+            alert(error);
+        })
+        setEditMode(!editMode);
+        const newKeys = keys.filter((key: string) => key != fileURL);
+        setKeys(newKeys);
     }
 
     // Update the list of keys to access files in db
@@ -117,19 +129,11 @@ const userIndex = () => {
         setNoteVisible(!noteVisible);
     }
 
+    // Open file when clicked on by encoding the data URI to base64, and then decoding it to a regular URL
     function openFile(fileURL: string) {
         const starCountRef = ref(FIREBASE_DB, 'users/' + FIREBASE_AUTH.currentUser.uid + '/files/' + fileURL + '/filepath');
         get(starCountRef).then((snapshot) => {
             const data = snapshot.val();
-            /*
-            var file = new Blob([data], { type: 'application/pdf' });
-            console.log(file);
-            var fileURL = URL.createObjectURL(file);
-            console.log('*****************');
-            console.log(fileURL);
-            var win = window.open();
-            win.document.write('<iframe src="' + fileURL + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
-            */
             const dataAsURL = base64Encode(data);
             console.log(dataAsURL);
             var win = window.open();
@@ -155,6 +159,9 @@ const userIndex = () => {
                     <View>
                         <Pressable style={styles.dropdownItem} onPress={selectFile}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>Upload PDF</Text>
+                        </Pressable>
+                        <Pressable onPress={() => setEditMode(!editMode)} style={styles.dropdownItem}>
+                            <Text style={{fontSize: 18, fontWeight: '500'}}>Delete Files</Text>
                         </Pressable>
                         <Pressable style={styles.dropdownItem} onPress={makeNewNote}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>New Note</Text>
@@ -186,7 +193,7 @@ const userIndex = () => {
             <>
                 <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', marginTop: '10%' }}>
                     <Text style={{ display: 'flex', justifyContent: 'center', color: 'blue', fontSize: 15 }}>{singleFile.assets[0].name + ': '}</Text>
-                    <Pressable onPress={() => uploadToDB(FIREBASE_AUTH.currentUser.uid, FIREBASE_AUTH.currentUser.displayName, FIREBASE_AUTH.currentUser.email, singleFile.assets[0].uri, singleFile.assets[0].name)}>
+                    <Pressable onPress={() => uploadToDB(FIREBASE_AUTH.currentUser.uid, singleFile.assets[0].uri, singleFile.assets[0].name)}>
                         <Text style={{ fontWeight: 'bold', paddingRight: 10 }}>Confirm upload?</Text>
                     </Pressable>
                     <Text style={{marginRight: 10, fontWeight: 'bold'}}>OR</Text>
@@ -203,9 +210,16 @@ const userIndex = () => {
                     {filenames.map((item, index) => {
                         return (
                             <View key={index} style={{paddingBottom: '2%'}}>
-                                <Pressable onPress={() => openFile(keys[index])}>
-                                    <Text style={{fontSize: 18}}>{item}</Text>
-                                </Pressable>
+                                <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                                    <Pressable onPress={() => openFile(keys[index])}>
+                                        <Text style={{fontSize: 18}}>{item}</Text>
+                                    </Pressable>
+                                    {editMode &&
+                                    <Pressable style={styles.buttons} onPress={() => deleteFromDB(keys[index])}>
+                                        <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>Delete</Text>
+                                    </Pressable>
+                                    }
+                                </View>
                             </View>
                         )
                     })}
@@ -280,6 +294,13 @@ const styles = StyleSheet.create({
         margin: 5,
         backgroundColor: 'white',
         padding: 4,
+    },
+    buttons: {
+        marginLeft: 8,
+        backgroundColor: 'black',
+        padding: 3,
+        borderRadius: 12,
+        borderWidth: 3,
     },
 })
 export default userIndex
