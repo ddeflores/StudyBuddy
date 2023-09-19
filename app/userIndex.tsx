@@ -65,7 +65,8 @@ const userIndex = () => {
         }
     }
 
-    function uploadNoteToDB(userId: string, name: string, email: string, fileName: string) {
+    function uploadNoteToDB(fileName: string, contents: string) {
+        
     }
 
     function deleteFromDB(fileURL: string, fileName: string) {
@@ -213,7 +214,6 @@ const userIndex = () => {
             <View style={styles.body}>
                 <View>
                     <Text style={{fontSize: 26, color: 'black', fontWeight: 'bold'}}>Your Files:</Text>
-                    {!filenames && <Text>Don't have any files? Make or upload one by tapping the top right corner!</Text>}
                     {filenames.map((item, index) => {
                         return (
                             <View key={index} style={{paddingBottom: '2%'}}>
@@ -236,7 +236,7 @@ const userIndex = () => {
             <View style={styles.noteContainer}>
                 <TextInput style={styles.input} placeholder=' Title' placeholderTextColor="gray" autoCapitalize='none' onChangeText={newTitle => setTitle(newTitle)} defaultValue={title}></TextInput>
                 <TextInput style={styles.input} placeholder=' Note' placeholderTextColor="gray" autoCapitalize='none' onChangeText={newNote => setNote(newNote)} defaultValue={note}></TextInput>
-                <Pressable onPress={() => {uploadNoteToDB(FIREBASE_AUTH.currentUser.uid, FIREBASE_AUTH.currentUser.displayName, FIREBASE_AUTH.currentUser.email, title)}} >Upload note</Pressable>
+                <Pressable onPress={() => {uploadNoteToDB(title, note)}} >Upload note</Pressable>
             </View>
             }
         </View>
