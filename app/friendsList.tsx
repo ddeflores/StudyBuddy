@@ -85,7 +85,7 @@ const userIndex = () => {
     // Listen for updates to files in db
     useEffect(() => {
         for (let i = 0; i < keys.length; i++) {
-            const starCountRef = ref(FIREBASE_DB, 'users/' + FIREBASE_AUTH.currentUser.uid + '/files/' + keys[i] + '/friendName');
+            const starCountRef = ref(FIREBASE_DB, 'users/' + FIREBASE_AUTH.currentUser.uid + '/friends/' + keys[i] + '/friendName');
             onValue(starCountRef, (snapshot) => {
                 const data = snapshot.val();
                 const newFiles = Object.keys(data || {}).map(key => ({
@@ -136,6 +136,9 @@ const userIndex = () => {
                         <Pressable style={styles.dropdownItem} onPress={() => {useRouter().push('/userIndex')}}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>Your Files</Text>
                         </Pressable>
+                        <Pressable style={styles.dropdownItem} onPress={() => {useRouter().push('/account')}}>
+                            <Text style={{fontSize: 18, fontWeight: '500'}}>Account</Text>
+                        </Pressable>
                         <Pressable style={styles.dropdownItem} onPress={() => setConfirmVisible(true)}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>Logout</Text>
                         </Pressable>
@@ -158,10 +161,10 @@ const userIndex = () => {
             </View>
             {addVisible && 
             <>
-                <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '10%', justifyContent: 'center' }}>
+                <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '5%', justifyContent: 'center' }}>
                     <View>
-                        <TextInput placeholderTextColor="gray" style={styles.input} placeholder={"Friends's User ID: "} onChangeText={(newFriendUserID) => setFriendUserID(newFriendUserID)} defaultValue={friendUserID}></TextInput>
-                        <TextInput placeholderTextColor="gray" style={styles.input} placeholder={"Friend's Username: "} onChangeText={(newFriendUsername) => setFriendUsername(newFriendUsername)} defaultValue={friendUsername}></TextInput>
+                        <TextInput placeholderTextColor="gray" style={styles.input} placeholder={"Friends's UserID: "} onChangeText={(newFriendUserID) => setFriendUserID(newFriendUserID)} defaultValue={friendUserID}></TextInput>
+                        <TextInput placeholderTextColor="gray" style={styles.input} placeholder={"List Display Name: "} onChangeText={(newFriendUsername) => setFriendUsername(newFriendUsername)} defaultValue={friendUsername}></TextInput>
                     </View>
                     <View style={{display: 'flex', flexDirection: 'row'}}>
                         <Pressable onPress={() => addFriend(FIREBASE_AUTH.currentUser.uid, friendUserID, friendUsername)}>

@@ -177,6 +177,9 @@ const userIndex = () => {
                         <Pressable style={styles.dropdownItem} onPress={() => {useRouter().push('/friendsList')}}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>Friends</Text>
                         </Pressable>
+                        <Pressable style={styles.dropdownItem} onPress={() => {useRouter().push('/account')}}>
+                            <Text style={{fontSize: 18, fontWeight: '500'}}>Account</Text>
+                        </Pressable>
                         <Pressable style={styles.dropdownItem} onPress={() => setConfirmVisible(true)}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>Logout</Text>
                         </Pressable>
