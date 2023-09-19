@@ -156,7 +156,7 @@ const userIndex = () => {
                 <View style={styles.navBar}>
                 <Ionicons name="people-circle-outline" size={40}/>
                     <Text style={{fontSize: 20, fontWeight: 'bold'}}>Your Dashboard</Text>
-                    <TouchableOpacity onPress={() => setVisible(!visible)}>
+                    <TouchableOpacity onPress={() => {setVisible(!visible), setConfirmVisible(false), setEditMode(false), setNoteVisible(false)}}>
                         <Icon name="menu-outline" size={40}/>
                     </TouchableOpacity>
                 </View>
@@ -174,7 +174,7 @@ const userIndex = () => {
                         <Pressable style={styles.dropdownItem} onPress={makeNewNote}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>New Note</Text>
                         </Pressable>
-                        <Pressable style={styles.dropdownItem} onPress={() => {useRouter().replace('/friendsList')}}>
+                        <Pressable style={styles.dropdownItem} onPress={() => {useRouter().push('/friendsList')}}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>Friends</Text>
                         </Pressable>
                         <Pressable style={styles.dropdownItem} onPress={() => setConfirmVisible(true)}>
