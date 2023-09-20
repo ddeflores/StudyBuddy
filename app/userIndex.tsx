@@ -126,11 +126,6 @@ const userIndex = () => {
           useRouter().replace('/');
         }
     });
-      
-    // Log out the user
-    const onSignOut = async () => {
-        signOut(FIREBASE_AUTH);
-    }
 
     // TODO
     const makeNewNote = async () => {
@@ -180,22 +175,6 @@ const userIndex = () => {
                         <Pressable style={styles.dropdownItem} onPress={() => {useRouter().push('/account')}}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>Account</Text>
                         </Pressable>
-                        <Pressable style={styles.dropdownItem} onPress={() => setConfirmVisible(true)}>
-                            <Text style={{fontSize: 18, fontWeight: '500'}}>Logout</Text>
-                        </Pressable>
-                        {confirmVisible &&
-                        <View style={{borderWidth: 2, borderRadius: 12, borderColor: 'black', padding: 3}}>
-                            <Text>Confirm log out?</Text>
-                            <View style={{display: 'flex', flexDirection: 'row'}}>
-                                <Pressable onPress={onSignOut}>
-                                    <Text style={{fontWeight: 'bold'}}>Yes</Text>
-                                </Pressable>
-                                <Pressable onPress={() => setConfirmVisible(false)} style={{paddingLeft: 40}}>
-                                    <Text style={{fontWeight: 'bold'}}>Cancel</Text>
-                                </Pressable>
-                            </View>
-                        </View>
-                        }
                     </View>
                     }
                 </View>
