@@ -11,7 +11,7 @@ const index = () => {
   useEffect(() => {
     FIREBASE_AUTH.onAuthStateChanged(function(user) {
       if (user) {
-        useRouter().replace('/userIndex');
+        useRouter().push('/userIndex');
       }
     });
   }, []);
