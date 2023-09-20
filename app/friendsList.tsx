@@ -19,7 +19,6 @@ const userIndex = () => {
     const [friendUsername, setFriendUsername] = useState('');
     const [addVisible, setAddVisible] = useState(false);
     const [editMode, setEditMode] = useState(false);
-    const [confirmVisible, setConfirmVisible] = useState(false);
     const [visible, setVisible] = useState(false);
     const [singleFriend, setSingleFriend] = useState<string>(null);
     const [keys, setKeys] = useState<string[]>([]);
@@ -100,25 +99,13 @@ const userIndex = () => {
         }
     }, [keys]);
 
-    // Make sure user is signed in, and redirect to login page if not
-    FIREBASE_AUTH.onAuthStateChanged(function(user) {
-        if (!user) {
-          useRouter().replace('/');
-        }
-    });
-      
-    // Log out the user
-    const onSignOut = async () => {
-        signOut(FIREBASE_AUTH);
-    }
-
     return (
         <View style={styles.container}>
             <View style={styles.navContainer}>
                 <View style={styles.navBar}>
                     <Ionicons name="people-circle-outline" size={40}/>
                     <Text style={{fontSize: 20, fontWeight: 'bold'}}>Friends List</Text>
-                    <TouchableOpacity onPress={() => {setVisible(!visible), setAddVisible(false), setConfirmVisible(false), setEditMode(false)}}>
+                    <TouchableOpacity onPress={() => {setVisible(!visible), setAddVisible(false), setEditMode(false)}}>
                         <Icon name="menu-outline" size={40}/>
                     </TouchableOpacity>
                 </View>
@@ -139,22 +126,6 @@ const userIndex = () => {
                         <Pressable style={styles.dropdownItem} onPress={() => {useRouter().push('/account')}}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>Account</Text>
                         </Pressable>
-                        <Pressable style={styles.dropdownItem} onPress={() => setConfirmVisible(true)}>
-                            <Text style={{fontSize: 18, fontWeight: '500'}}>Logout</Text>
-                        </Pressable>
-                        {confirmVisible &&
-                        <View style={{borderWidth: 2, borderRadius: 12, borderColor: 'black', padding: 3}}>
-                            <Text>Confirm log out?</Text>
-                            <View style={{display: 'flex', flexDirection: 'row'}}>
-                                <Pressable onPress={onSignOut}>
-                                    <Text style={{fontWeight: 'bold'}}>Yes</Text>
-                                </Pressable>
-                                <Pressable onPress={() => setConfirmVisible(false)} style={{paddingLeft: 40}}>
-                                    <Text style={{fontWeight: 'bold'}}>Cancel</Text>
-                                </Pressable>
-                            </View>
-                        </View>
-                        }
                     </View>
                     }
                 </View>
@@ -246,10 +217,6 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         position: 'absolute',
         top: '10%',
-    },
-    noteContainer: {
-        display: 'flex',
-        alignItems: 'center',
     },
     input: {
         height: 25,
