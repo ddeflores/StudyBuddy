@@ -21,13 +21,13 @@ const userIndex = () => {
     const [editMode, setEditMode] = useState(false);
     const [visible, setVisible] = useState(false);
     const [singleFriend, setSingleFriend] = useState<string>(null);
-    const [keys, setKeys] = useState<string[]>([]);
+    const [friendKeys, setFriendKeys] = useState<string[]>([]);
     const [friends, setFriends] = useState<string[]>([]);
 
     // Update files to display
-    function updateFiles(newFile: string) {
-        const newFilenames = [...friends, newFile];
-        setFriends(newFilenames);
+    function updateFriends(newFile: string) {
+        const newFriends = [...friends, newFile];
+        setFriends(newFriends);
     }
 
     // Upload the selected file to the database
@@ -55,36 +55,36 @@ const userIndex = () => {
             alert(error);
         })
         setEditMode(!editMode);
-        const newKeys = keys.filter((key: string) => key != friendID);
-        setKeys(newKeys);
+        const newKeys = friendKeys.filter((key: string) => key != friendID);
+        setFriendKeys(newKeys);
         const newFriends = friends.filter((filename: string) => filename != friendName);
         setFriends(newFriends);
     }
 
     // Update the list of keys to access files in db
     function updateKeys(newKey: string) {
-        const newKeys = [...keys, newKey];
-        setKeys(newKeys);
+        const newKeys = [...friendKeys, newKey];
+        setFriendKeys(newKeys);
     }
 
-    // Listen for updates to files in db
+    // Listen for updates to friends in db
     useEffect(() => {
         const dbRef = ref(FIREBASE_DB, 'users/' + FIREBASE_AUTH.currentUser.uid + '/friends')
         onValue(dbRef, (snapshot) => {
             snapshot.forEach((childSnapshot) => {
               const childKey = childSnapshot.key;
-              if (!keys.includes(childKey)) {
+              if (!friendKeys.includes(childKey)) {
                 updateKeys(childKey);
               }
-              console.log(keys);
+              console.log(friendKeys);
             });
           });
     }, [friends]);
 
-    // Listen for updates to files in db
+    // Listen for updates to friends in db
     useEffect(() => {
-        for (let i = 0; i < keys.length; i++) {
-            const starCountRef = ref(FIREBASE_DB, 'users/' + FIREBASE_AUTH.currentUser.uid + '/friends/' + keys[i] + '/friendName');
+        for (let i = 0; i < friendKeys.length; i++) {
+            const starCountRef = ref(FIREBASE_DB, 'users/' + FIREBASE_AUTH.currentUser.uid + '/friends/' + friendKeys[i] + '/friendName');
             onValue(starCountRef, (snapshot) => {
                 const data = snapshot.val();
                 const newFiles = Object.keys(data || {}).map(key => ({
@@ -92,12 +92,12 @@ const userIndex = () => {
                 ...data[key],
                 }));
                 if (!friends.includes(data)) {
-                    updateFiles(data);
+                    updateFriends(data);
                 }
                 console.log(newFiles);
             });
         }
-    }, [keys]);
+    }, [friendKeys]);
 
     return (
         <View style={styles.container}>
@@ -158,7 +158,7 @@ const userIndex = () => {
                                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                                     <Text style={{fontSize: 18}}>{item}</Text>
                                     {editMode &&
-                                    <Pressable style={styles.buttons} onPress={() => deleteFromDB(keys[index], item)}>
+                                    <Pressable style={styles.buttons} onPress={() => deleteFromDB(friendKeys[index], item)}>
                                         <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>Delete</Text>
                                     </Pressable>
                                     }

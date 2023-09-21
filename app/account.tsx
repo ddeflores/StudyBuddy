@@ -29,10 +29,14 @@ const onSignOut = async () => {
       </View>
       <View style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
         <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-            <Text style={{fontSize: 20, fontWeight: '500', color: 'black'}}>UserID:</Text>
-            <Text style={{marginLeft: '3%'}}>{FIREBASE_AUTH.currentUser.uid}</Text>
+            <Text style={{fontSize: 20, fontWeight: '500', color: 'black'}}>Email:</Text>
+            <Text style={{marginLeft: '3%', fontSize: 17}}>{FIREBASE_AUTH.currentUser.email}</Text>
         </View>
-        <Text style={{fontSize: 17, color: 'black', fontStyle: 'italic'}}>Only share this with your friends!</Text>
+        <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+            <Text style={{fontSize: 20, fontWeight: '500', color: 'black'}}>UserID:</Text>
+            <Text style={{marginLeft: '3%', fontSize: 17}}>{FIREBASE_AUTH.currentUser.uid}</Text>
+        </View>
+        <Text style={{fontSize: 16, color: 'black', fontStyle: 'italic', margin: '1%'}}>Only share this with your friends!</Text>
       </View>
       <View>
         <TouchableOpacity style={styles.buttons} onPress={() => setConfirmVisible(true)}>

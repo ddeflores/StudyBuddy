@@ -15,11 +15,13 @@ import { base64Decode, base64Encode } from '@firebase/util';
 
 const userIndex = () => {
     // States
+    const [currentFile, setCurrentFile] = useState<string[]>([]);
+    const [friendUserID, setFriendUserID] = useState('');
+    const [shareMenuVisible, setShareMenuVisible] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [noteVisible, setNoteVisible] = useState(false);
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
-    const [confirmVisible, setConfirmVisible] = useState(false);
     const [visible, setVisible] = useState(false);
     const [singleFile, setSingleFile] = useState<DocumentPicker.DocumentPickerResult>(null);
     const [keys, setKeys] = useState<string[]>([]);
@@ -50,7 +52,23 @@ const userIndex = () => {
 
     // Upload the selected file to the database
     function uploadToDB(userId: string, fileURL: string, fileName: string) {
-        if (!filenames.includes(fileName)) {
+        if (userId === FIREBASE_AUTH.currentUser.uid) {
+            if (!filenames.includes(fileName)) {
+                const newRef = push(ref(FIREBASE_DB, 'users/' + userId + '/files'))
+                update(newRef, {
+                filename : fileName,
+                filepath: fileURL
+                }).catch((error) => {
+                    alert(error);
+                })
+                setSingleFile(null);
+                setCurrentFile([]);
+            }
+            else {
+                alert('A file with this name already exists!');
+            }
+        }
+        else {
             const newRef = push(ref(FIREBASE_DB, 'users/' + userId + '/files'))
             update(newRef, {
             filename : fileName,
@@ -59,12 +77,12 @@ const userIndex = () => {
                 alert(error);
             })
             setSingleFile(null);
-        }
-        else {
-            alert('A file with this name already exists!');
+            setCurrentFile([]);
+            setShareMenuVisible(false);
         }
     }
 
+    // TO DO
     function uploadNoteToDB(fileName: string, contents: string) {
         
     }
@@ -75,7 +93,6 @@ const userIndex = () => {
         remove(newRef).catch((error) => {
             alert(error);
         })
-        setEditMode(!editMode);
         const newKeys = keys.filter((key: string) => key != fileURL);
         setKeys(newKeys);
         const newFilenames = filenames.filter((filename: string) => filename != fileName);
@@ -120,6 +137,7 @@ const userIndex = () => {
         }
     }, [keys]);
 
+    
     // Make sure user is signed in, and redirect to login page if not
     FIREBASE_AUTH.onAuthStateChanged(function(user) {
         if (!user) {
@@ -151,7 +169,7 @@ const userIndex = () => {
                 <View style={styles.navBar}>
                 <Ionicons name="people-circle-outline" size={40}/>
                     <Text style={{fontSize: 20, fontWeight: 'bold'}}>Your Dashboard</Text>
-                    <TouchableOpacity onPress={() => {setVisible(!visible), setConfirmVisible(false), setEditMode(false), setNoteVisible(false)}}>
+                    <TouchableOpacity onPress={() => {setVisible(!visible), setEditMode(false), setNoteVisible(false), setShareMenuVisible(false)}}>
                         <Icon name="menu-outline" size={40}/>
                     </TouchableOpacity>
                 </View>
@@ -203,6 +221,9 @@ const userIndex = () => {
                                     <Pressable onPress={() => openFile(keys[index])}>
                                         <Text style={{fontSize: 18}}>{item}</Text>
                                     </Pressable>
+                                    <Pressable style={styles.buttons} onPress={() => {setShareMenuVisible(!shareMenuVisible), setCurrentFile([keys[index], item])}}>
+                                        <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>Share</Text>
+                                    </Pressable>
                                     {editMode &&
                                     <Pressable style={styles.buttons} onPress={() => deleteFromDB(keys[index], item)}>
                                         <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>Delete</Text>
@@ -214,11 +235,19 @@ const userIndex = () => {
                     })}
                 </View>
             </View>
+            {shareMenuVisible &&
+            <View style={styles.noteContainer}>
+                <TextInput placeholderTextColor="gray" style={styles.input} placeholder={"Friends's UserID: "} onChangeText={(newFriendUserID) => setFriendUserID(newFriendUserID)} defaultValue={friendUserID}></TextInput>
+                <Pressable style={styles.buttons} onPress={() => {uploadToDB(friendUserID, currentFile[0], currentFile[1])}}>
+                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>Share</Text>
+                </Pressable>
+            </View>
+            }
             {noteVisible &&
             <View style={styles.noteContainer}>
                 <TextInput style={styles.input} placeholder=' Title' placeholderTextColor="gray" autoCapitalize='none' onChangeText={newTitle => setTitle(newTitle)} defaultValue={title}></TextInput>
                 <TextInput style={styles.input} placeholder=' Note' placeholderTextColor="gray" autoCapitalize='none' onChangeText={newNote => setNote(newNote)} defaultValue={note}></TextInput>
-                <Pressable onPress={() => {uploadNoteToDB(title, note)}} >Upload note</Pressable>
+                <Pressable style={styles.buttons} onPress={() => {uploadNoteToDB(title, note)}} >Upload note</Pressable>
             </View>
             }
         </View>
