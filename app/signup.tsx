@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, Button, Pressable } from 'react-native';
 import React, { useState } from 'react';
-import { Link, Redirect, useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
 import { FIREBASE_AUTH } from '../firebaseConfig';
