@@ -35,7 +35,7 @@ const userIndex = () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
               copyToCacheDirectory: true,
-              type: 'application/pdf',
+              type: ['application/pdf', 'text/*', 'image/*'],
             });
             console.log('res : ' + JSON.stringify(result));
             setSingleFile(result);
@@ -81,7 +81,15 @@ const userIndex = () => {
 
     // TO DO
     function uploadNoteToDB(fileName: string, contents: string) {
-        
+        let textFile = null;
+        const data = new Blob([contents], {type: 'text/plain'});
+        if (textFile !== null) {
+            window.URL.revokeObjectURL(textFile);
+        }
+        textFile = window.URL.createObjectURL(data);
+        console.log(textFile);
+        uploadToDB(FIREBASE_AUTH.currentUser.uid, textFile, fileName);
+        setNoteVisible(false);
     }
 
     function deleteFromDB(fileURL: string, fileName: string) {
@@ -176,13 +184,13 @@ const userIndex = () => {
                     {visible &&
                     <View>
                         <Pressable style={styles.dropdownItem} onPress={selectFile}>
-                            <Text style={{fontSize: 18, fontWeight: '500'}}>Upload PDF</Text>
+                            <Text style={{fontSize: 18, fontWeight: '500'}}>Upload File</Text>
                         </Pressable>
                         <Pressable onPress={() => setEditMode(!editMode)} style={styles.dropdownItem}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>Delete Files</Text>
                         </Pressable>
                         <Pressable style={styles.dropdownItem} onPress={makeNewNote}>
-                            <Text style={{fontSize: 18, fontWeight: '500'}}>New Note</Text>
+                            <Text style={{fontSize: 18, fontWeight: '500'}}>Make Note</Text>
                         </Pressable>
                         <Pressable style={styles.dropdownItem} onPress={() => {useRouter().push('/friendsList')}}>
                             <Text style={{fontSize: 18, fontWeight: '500'}}>Friends</Text>
@@ -196,7 +204,10 @@ const userIndex = () => {
             </View>
             {singleFile && 
             <>
-                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', marginTop: '10%' }}>
+                <Text style={{marginTop: '10%', fontSize: 20, fontWeight: '500'}}>
+                    Filetype must be pdf, text, or image
+                </Text>
+                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', marginTop: '1%' }}>
                     <Text style={{ display: 'flex', justifyContent: 'center', color: 'blue', fontSize: 15 }}>{singleFile.assets[0].name + ': '}</Text>
                     <Pressable onPress={() => uploadToDB(FIREBASE_AUTH.currentUser.uid, singleFile.assets[0].uri, singleFile.assets[0].name)}>
                         <Text style={{ fontWeight: 'bold', paddingRight: 10 }}>Confirm upload?</Text>
@@ -244,7 +255,11 @@ const userIndex = () => {
             <View style={styles.noteContainer}>
                 <TextInput style={styles.input} placeholder=' Title' placeholderTextColor="gray" autoCapitalize='none' onChangeText={newTitle => setTitle(newTitle)} defaultValue={title}></TextInput>
                 <TextInput style={styles.input} placeholder=' Note' placeholderTextColor="gray" autoCapitalize='none' onChangeText={newNote => setNote(newNote)} defaultValue={note}></TextInput>
-                <Pressable style={styles.buttons} onPress={() => {uploadNoteToDB(title, note)}} >Upload note</Pressable>
+                <Pressable style={styles.buttons} onPress={() => {uploadNoteToDB(title, note)}} >
+                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>
+                        Upload note
+                    </Text>
+                </Pressable>
             </View>
             }
         </View>
