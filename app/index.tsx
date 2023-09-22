@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { useEffect } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { FIREBASE_AUTH, GOOGLE_AUTH } from '../firebaseConfig';
-import { GoogleAuthProvider, browserLocalPersistence, inMemoryPersistence, setPersistence, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, browserLocalPersistence, setPersistence, signInWithPopup } from 'firebase/auth';
 
 const index = () => {
   const auth = FIREBASE_AUTH;

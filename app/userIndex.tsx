@@ -1,16 +1,13 @@
 import { View, StyleSheet, Text, Pressable, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { FIREBASE_AUTH, FIREBASE_DB } from '../firebaseConfig';
-import { child, get, onValue, push, ref, remove, update } from 'firebase/database';
+import { get, onValue, push, ref, remove, update } from 'firebase/database';
 import { useRouter } from 'expo-router';
-import { signOut } from 'firebase/auth';
 import * as DocumentPicker from 'expo-document-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from '@expo/vector-icons';
 import { onAuthStateChanged } from 'firebase/auth'
 import { TextInput } from 'react-native-gesture-handler';
-import * as WebBrowser from 'expo-web-browser';
-import * as Linking from 'expo-linking';
 import { base64Decode, base64Encode } from '@firebase/util';
 
 const userIndex = () => {

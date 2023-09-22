@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { FIREBASE_AUTH, GOOGLE_AUTH } from '../firebaseConfig';
-import { GoogleAuthProvider, browserLocalPersistence, inMemoryPersistence, setPersistence, signInWithPopup, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 
 const account = () => {
   const [confirmVisible, setConfirmVisible] = useState(false);

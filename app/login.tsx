@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, Button, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
-import { FIREBASE_APP, FIREBASE_AUTH } from '../firebaseConfig';
+import { FIREBASE_AUTH } from '../firebaseConfig';
 import { browserLocalPersistence, onAuthStateChanged, setPersistence, signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginPage = () => {
