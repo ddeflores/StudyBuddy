@@ -155,6 +155,18 @@ const userIndex = () => {
         setNoteVisible(!noteVisible);
     }
 
+    function dataURLtoBlob(dataURI) {
+        var byteString = atob(dataURI.split(',')[1]);
+        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+        var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(ab);
+        for (var i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        var blob = new Blob([ab], {type: mimeString});
+        return blob;
+      }
+
     // Open file when clicked on by encoding the data URI to base64, and then decoding it to a regular URL
     function openFile(fileURL: string) {
         const starCountRef = ref(FIREBASE_DB, 'users/' + FIREBASE_AUTH.currentUser.uid + '/files/' + fileURL + '/filepath');
@@ -163,7 +175,9 @@ const userIndex = () => {
             const dataAsURL = base64Encode(data);
             console.log(dataAsURL);
             var win = window.open();
-            win.document.write('<iframe src="' + base64Decode(dataAsURL) + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
+            let U=URL.createObjectURL( dataURLtoBlob(base64Decode(dataAsURL) ) ); 
+            win.document.write('<iframe src="' + U + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
+            URL.revokeObjectURL(U);
         }
         );
     }
@@ -205,7 +219,7 @@ const userIndex = () => {
             {singleFile && 
             <>
                 <Text style={{marginTop: '10%', fontSize: 20, fontWeight: '500'}}>
-                    Filetype must be pdf, text, or image
+                    Filetype must be pdf, text, or image less than 10mb
                 </Text>
                 <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', marginTop: '1%' }}>
                     <Text style={{ display: 'flex', justifyContent: 'center', color: 'blue', fontSize: 15 }}>{singleFile.assets[0].name + ': '}</Text>
